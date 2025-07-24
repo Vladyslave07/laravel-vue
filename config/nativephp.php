@@ -98,7 +98,7 @@ return [
          * The updater provider to use.
          * Supported: "github", "s3", "spaces"
          */
-        'default' => env('NATIVEPHP_UPDATER_PROVIDER', 'spaces'),
+        'default' => env('NATIVEPHP_UPDATER_PROVIDER', 'github'),
 
         'providers' => [
             'github' => [
