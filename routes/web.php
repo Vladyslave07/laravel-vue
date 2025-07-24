@@ -16,5 +16,9 @@ Route::get('test', function () {
 Route::get('iaai', function () {
     return Inertia::render('IAAI');
 })->middleware(['auth', 'verified'])->name('iaai');
+Route::get('copart', function () {
+    return Inertia::render('Copart');
+})->middleware(['auth', 'verified'])->name('copart');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
