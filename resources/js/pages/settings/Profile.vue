@@ -31,8 +31,8 @@ const user = page.props.auth.user as User;
 const form = useForm({
     name: user.name,
     email: user.email,
+    phone: user.phone,
 });
-
 const submit = () => {
     form.patch(route('profile.update'), {
         preserveScroll: true,
@@ -87,6 +87,19 @@ const submit = () => {
                         </div>
                     </div>
 
+                    <div class="grid gap-2">
+                        <Label for="phone">Phone</Label>
+                        <Input
+                            id="phone"
+                            type="text"
+                            class="mt-1 block w-full"
+                            v-model="form.phone"
+                            required
+                            autocomplete="tel"
+                            placeholder="Phone number"
+                        />
+                        <InputError class="mt-2" :message="form.errors.phone" />
+                    </div>
                     <div class="flex items-center gap-4">
                         <Button :disabled="form.processing">Save</Button>
 

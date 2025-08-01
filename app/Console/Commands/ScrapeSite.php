@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use GuzzleHttp\Client;
-use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Process\Process;
 
 class ScrapeSite extends Command
 {
@@ -13,19 +12,23 @@ class ScrapeSite extends Command
 
     public function handle()
     {
-        $url = 'https://www.iaai.com';
+        $url = 'https://www.copart.com/';
+        $this->info("Scraping URL: $url");
 
-        $client = new Client([
-            'verify' => false,
-        ]);
+        $process = new Process(['node', 'scraper/scrape-iaaitest.js', $url]);
+        $process->setTimeout(60);
+        $process->run();
 
-        $response = $client->request('GET', $url);
-        $html = $response->getBody()->getContents();
+        if (!$process->isSuccessful()) {
+            $this->error('Scraping failed: ' . $process->getErrorOutput());
+            return 1;
+        }
 
-        $crawler = new Crawler($html);
-        $this->info('Scraping started...');
-        $header = $crawler->text();
-        $this->info("Page header: $header");
-        $this->info('Scraping finished!');
+        $output = json_decode($process->getOutput(), true);
+        $title = $output['title'] ?? 'N/A';
+        $html = $output['html'] ?? 'N/A';
+        $this->info("Page Title: $title");
+        $this->info("Page HTML: " . substr($html, 0, 200) . '...');
+        return 0;
     }
 }
