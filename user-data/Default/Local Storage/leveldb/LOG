@@ -1,0 +1,5 @@
+2025/08/15-09:35:40.884 1a48 Reusing MANIFEST C:\Users\crm03\Project\laravel-vue\user-data\Default\Local Storage\leveldb/MANIFEST-000001
+2025/08/15-09:35:40.899 1a48 Recovering log #20
+2025/08/15-09:35:40.901 1a48 Reusing old log C:\Users\crm03\Project\laravel-vue\user-data\Default\Local Storage\leveldb/000020.log 
+2025/08/15-09:36:29.334 1a48 Level-0 table #23: started
+2025/08/15-09:36:29.347 1a48 Level-0 table #23: 966952 bytes OK

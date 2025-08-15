@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const url = process.argv[2] || 'https://www.iaai.com/';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const cookiesPath = path.resolve(__dirname, 'www.iaai.com_01-08-2025.json');
+const cookiesPath = path.resolve(__dirname, 'www.iaai.com_04-08-2025.json');
 if (!url) {
     console.log('No URL passed');
     process.exit(1);
@@ -78,6 +78,7 @@ const checkForIncapsula = (html) => {
         });
 
         const page = await browser.newPage();
+        
 
         // Дополнительные заголовки для имитации реального браузера
         await page.setExtraHTTPHeaders({
@@ -108,7 +109,7 @@ const checkForIncapsula = (html) => {
         });
 
         // Загрузка куков если они существуют
-        if (fs.existsSync(cookiesPath) ) {
+        if (fs.existsSync(cookiesPath)) {
             try {
                 const fileContent = fs.readFileSync(cookiesPath, 'utf8');
                 const parsed = JSON.parse(fileContent);
@@ -117,13 +118,13 @@ const checkForIncapsula = (html) => {
                     await page.setCookie(...parsed.cookies);
 
                 } else {
-                    console.log('⚠️ Неверный формат файла куков');
+                    console.error('⚠️ Неверный формат файла куков');
                 }
             } catch (err) {
                 console.error('❌ Ошибка при чтении куков:', err.message);
             }
         } else {
-            console.log('⚠️ Файл куков не найден, продолжаем без них');
+            console.error('⚠️ Файл куков не найден, продолжаем без них');
         }
 
         // Переходим на страницу с увеличенным таймаутом
@@ -203,6 +204,8 @@ const checkForIncapsula = (html) => {
             }
         });
 
+
+
         // Удаляем проблемные скрипты и трекеры
         $(
             'script[src*="bing.com"], ' +
@@ -219,6 +222,33 @@ const checkForIncapsula = (html) => {
         // Удаляем iframe защиты если остались
         $('iframe[src*="Incapsula"], iframe[id*="main-iframe"]').remove();
 
+        $('body').append(`
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const baseUrl = '${url}';
+
+    document.querySelectorAll('a[href]').forEach(a => {
+      a.addEventListener('click', function(event) {
+        const href = this.getAttribute('href');
+
+        // Пропускаем якоря, пустые и JS-ссылки
+        if (!href || href.startsWith('#') || href.startsWith('javascript:')) {
+          return;
+        }
+
+        event.preventDefault();
+
+        try {
+          const absoluteUrl = new URL(href, baseUrl).toString();
+          window.parent.postMessage({ iaaiNavigate: absoluteUrl }, '*');
+        } catch (err) {
+          console.warn('⛔️ Invalid link skipped:', href);
+        }
+      });
+    });
+  });
+</script>
+`);
         const cleanedHtml = $.html();
 
         // Сохраняем куки для будущих сессий
@@ -235,12 +265,12 @@ const checkForIncapsula = (html) => {
         // }
 
         await browser.close();
-        // Возвращаем результат как JSON
+
         console.log(JSON.stringify({
             html: cleanedHtml,
         }));
     } catch (error) {
-        console.error('💥 Ошибка скрапинга:', error.message);
+        console.error('💥 Ошибка скрапинга:', error);
 
         // Возвращаем ошибку в JSON формате
         console.log(JSON.stringify({

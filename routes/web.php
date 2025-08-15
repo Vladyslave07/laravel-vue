@@ -24,6 +24,7 @@ Route::get('copart', function () {
 })->middleware(['auth', 'verified'])->name('copart');
 Route::get('/copart-html', [ScrapeController::class, 'fetchCopart'])
     ->middleware(['auth']);
+Route::get('/proxy-copart', [ScrapeController::class, 'proxyCopart']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
